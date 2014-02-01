@@ -1,0 +1,14 @@
+python-requests-oauthlib (0.4.0-1) unstable; urgency=low
+
+  * Upgrade to new upstream version
+  * Simplified rules file
+  * Update Standards-Version
+  * Move to collab-maint
+
+ -- Simon Fondrie-Teitler <simonft@riseup.net>  Sat, 01 Feb 2014 13:26:06 -0500
+
+python-requests-oauthlib (0.3.3-1) unstable; urgency=low
+
+  * Initial release. Closes: 721545
+
+ -- Simon Fondrie-Teitler <simonft@riseup.net>  Sun, 01 Sep 2013 15:54:52 -0500

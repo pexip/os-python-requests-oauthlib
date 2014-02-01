@@ -1,0 +1,62 @@
+Source: python-requests-oauthlib
+Maintainer: Simon Fondrie-Teitler <simonft@riseup.net>
+Section: python
+Priority: optional
+Build-Depends: debhelper (>= 9),
+               python-all (>= 2.6.6-3),
+               python-setuptools (>= 0.6b3),
+               python3-all,
+               python3-setuptools,
+	       python-requests,
+	       python-oauthlib,
+	       python-sphinx,
+Homepage: https://github.com/requests/requests-oauthlib
+Standards-Version: 3.9.5
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/python-requests-oauthlib.git
+Vcs-Git: git://anonscm.debian.org/collab-maint/python-requests-oauthlib.git -b debian/unstable
+
+Package: python-requests-oauthlib
+Architecture: all
+Depends: ${misc:Depends}, 
+	 ${python:Depends}, 
+	 python-requests, 
+	 python-oauthlib (>= 0.4.2)
+Description: module providing OAuthlib auth support for requests (Python 2)
+ requests-oauthlib allows you to interact with OAuth 1 And OAuth 2 in
+ greatly simplified ways through the requests library for Python. It
+ will hide the quirks and hacks in OAuth 1, and will interface with
+ all four of the grant types defined by the OAuth2 RFC.
+ .
+ This package provides the requests-oauthlib Python module for Python
+ 2.x.
+
+Package: python3-requests-oauthlib
+Architecture: all
+Depends: ${misc:Depends}, 
+	 ${python3:Depends}, 
+	 python3-requests, 
+	 python3-oauthlib (>= 0.4.2)
+Description: module providing OAuthlib auth support for requests (Python 3)
+ requests-oauthlib allows you to interact with OAuth 1 And OAuth 2 in
+ greatly simplified ways through the requests library for Python. It
+ will hide the quirks and hacks in OAuth 1, and will interface with
+ all four of the grant types defined by the OAuth2 RFC.
+ .
+ This package provides the requests-oauthlib Python module for Python
+ 3.x.
+
+Package: python-requests-oauthlib-doc
+Architecture: all
+Section: doc
+Depends: ${sphinxdoc:Depends}, 
+	 ${misc:Depends},
+Description: module providing OAuthlib auth support for requests (Common Documentation)
+ requests-oauthlib allows you to interact with OAuth 1 And OAuth 2 in
+ greatly simplified ways through the requests library for Python. It
+ will hide the quirks and hacks in OAuth 1, and will interface with
+ all four of the grant types defined by the OAuth2 RFC.
+ .
+ This package provides the common documentation for the
+ requests-oauthlib Python module.
+
+ 
