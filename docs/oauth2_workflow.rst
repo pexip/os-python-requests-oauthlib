@@ -85,7 +85,7 @@ the provider is Google and the protected resource is the user's profile.
             authorization_response=authorization_response,
             # Google specific extra parameter used for client
             # authentication
-            client_secret=secret)
+            client_secret=client_secret)
 
 3. Access protected resources using the access token you just obtained.
    For example, get the users profile info.
@@ -109,15 +109,52 @@ Documentation coming soon. Want to help? Why not `write this section`_?
 Legacy Application Flow
 -----------------------
 
-Documentation coming soon. Want to help? Why not `write this section`_?
+The steps below outline how to use the Resource Owner Password Credentials Grant Type flow to obtain an access token.
 
+0. You will need the following settings. ``client_secret`` is optional depending on the provider.
+
+.. code-block:: pycon
+
+    >>> client_id = 'your_client_id'
+    >>> client_secret = 'your_client_secret'
+    >>> username = 'your_username'
+    >>> password = 'your_password'
+
+1. Fetch an access token from the provider.
+
+.. code-block:: pycon
+
+    >>> from oauthlib.oauth2 import LegacyApplicationClient
+    >>> from requests_oauthlib import OAuth2Session
+    >>> oauth = OAuth2Session(client=LegacyApplicationClient(client_id=client_id))
+    >>> token = oauth.fetch_token(token_url='https://somesite.com/oauth2/token',
+            username=username, password=password, client_id=client_id,
+            client_secret=client_secret)
 
 .. _backend-application-flow:
 
 Backend Application Flow
 ------------------------
 
-Documentation coming soon. Want to help? Why not `write this section`_?
+The steps below outline how to use the Resource Owner Client Credentials Grant Type flow to obtain an access token.
+
+0. Obtain credentials from your OAuth provider. At minimum you will
+   need a ``client_id`` and ``client_secret``. 
+
+.. code-block:: pycon
+
+    >>> client_id = 'your_client_id'
+    >>> client_secret = 'your_client_secret'
+
+1. Fetch an access token from the provider.
+
+.. code-block:: pycon
+    
+    >>> from oauthlib.oauth2 import BackendApplicationClient
+    >>> client = BackendApplicationClient(client_id=client_id)
+    >>> oauth = OAuth2Session(client=client)
+    >>> token = oauth.fetch_token(token_url='https://provider.com/oauth2/token', client_id=client_id,
+            client_secret=client_secret)
 
 
 Refreshing tokens

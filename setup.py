@@ -32,6 +32,10 @@ if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
 
+tests_require = ['mock', 'requests-mock']
+if sys.version_info < (2, 7): # Python 2.6 or lower
+    tests_require.append('unittest2')
+
 
 settings.update(
     name=APP_NAME,
@@ -43,7 +47,8 @@ settings.update(
     author_email='me@kennethreitz.com',
     url='https://github.com/requests/requests-oauthlib',
     packages=['requests_oauthlib', 'requests_oauthlib.compliance_fixes'],
-    install_requires=['oauthlib>=0.4.2', 'requests>=2.0.0'],
+    install_requires=['oauthlib>=0.6.2', 'requests>=2.0.0'],
+    extras_require={'rsa': ['oauthlib[rsa]>=0.6.2', 'requests>=2.0.0']},
     license='ISC',
     classifiers=(
         'Development Status :: 5 - Production/Stable',
@@ -53,9 +58,12 @@ settings.update(
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
     ),
     zip_safe=False,
-    tests_require=['mock'],
+    tests_require=tests_require,
     test_suite='tests'
 )
 

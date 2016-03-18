@@ -1,5 +1,5 @@
-Requests-OAuthlib
-=================
+Requests-OAuthlib |build-status| |coverage-status| |docs|
+=========================================================
 
 This project provides first-class OAuth library support for `Requests <http://python-requests.org>`_.
 
@@ -33,19 +33,11 @@ OAuth 2 is generally simpler than OAuth 1 but comes in more flavours. The most
 common being the Authorization Code Grant, also known as the WebApplication
 flow.
 
-Fetching a protected resource after obtaining an access token can be as simple as:
-
-.. code-block:: pycon
-
-    >>> from requests_oauthlib import OAuth2Session
-    >>> google = OAuth2Session(r'client_id', token=r'token')
-    >>> url = 'https://www.googleapis.com/oauth2/v1/userinfo'
-    >>> r = google.get(url)
-
-Before accessing resources you will need to obtain a few credentials from your
-provider (i.e. Google) and authorization from the user for whom you wish to
-retrieve resources for. You can read all about this in the full
-`OAuth 2 workflow guide on RTD <http://requests-oauthlib.readthedocs.org/en/latest/oauth2_workflow.html>`_.
+Fetching a protected resource after obtaining an access token can be extremely
+simple. However, before accessing resources you will need to obtain a few
+credentials from your provider (i.e. Google) and authorization from the user
+for whom you wish to retrieve resources for. You can read all about this in the
+full `OAuth 2 workflow guide on RTD <http://requests-oauthlib.readthedocs.org/en/latest/oauth2_workflow.html>`_.
 
 Installation
 -------------
@@ -55,3 +47,12 @@ To install requests and requests_oauthlib you can use pip:
 .. code-block:: bash
 
     $ pip install requests requests_oauthlib
+
+.. |build-status| image:: https://travis-ci.org/requests/requests-oauthlib.svg?branch=master
+   :target: https://travis-ci.org/requests/requests-oauthlib
+.. |coverage-status| image:: https://img.shields.io/coveralls/requests/requests-oauthlib.svg
+   :target: https://coveralls.io/r/requests/requests-oauthlib
+.. |docs| image:: https://readthedocs.org/projects/requests-oauthlib/badge/?version=latest
+   :alt: Documentation Status
+   :scale: 100%
+   :target: https://readthedocs.org/projects/requests-oauthlib/
