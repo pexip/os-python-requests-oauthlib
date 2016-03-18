@@ -1,3 +1,9 @@
+python-requests-oauthlib (0.4.0-1pexip1) pexip; urgency=low
+
+  * Prepare Pexip packaging
+
+ -- John-Mark Bell <jmb@pexip.com>  Fri, 18 Mar 2016 17:56:26 +0000
+
 python-requests-oauthlib (0.4.0-1) unstable; urgency=low
 
   * Upgrade to new upstream version

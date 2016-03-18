@@ -1,5 +1,6 @@
 Source: python-requests-oauthlib
-Maintainer: Simon Fondrie-Teitler <simonft@riseup.net>
+Maintainer: Pexip AS <packaging@pexip.com>
+XSBC-Pexip-Original-Maintainer: Simon Fondrie-Teitler <simonft@riseup.net>
 Section: python
 Priority: optional
 Build-Depends: debhelper (>= 9),
@@ -14,6 +15,7 @@ Homepage: https://github.com/requests/requests-oauthlib
 Standards-Version: 3.9.5
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/python-requests-oauthlib.git
 Vcs-Git: git://anonscm.debian.org/collab-maint/python-requests-oauthlib.git -b debian/unstable
+XS-Pexip-Upstream: http://ftp.debian.org/debian/ stretch
 
 Package: python-requests-oauthlib
 Architecture: all
