@@ -4,32 +4,15 @@ import mock
 import sys
 import requests
 import requests_oauthlib
+import oauthlib
 import os.path
-try:
-    from io import StringIO # python 3
-except ImportError:
-    from StringIO import StringIO # python 2
+from io import StringIO
 import unittest
-
-if sys.version[0] == '3':
-    bytes_type = bytes
-else:
-    bytes_type = str
 
 
 @mock.patch('oauthlib.oauth1.rfc5849.generate_timestamp')
 @mock.patch('oauthlib.oauth1.rfc5849.generate_nonce')
 class OAuth1Test(unittest.TestCase):
-
-    def setUp(self):
-        def converting_equals(a, b):
-            if isinstance(a, bytes_type):
-                a = a.decode('utf-8')
-            if isinstance(b, bytes_type):
-                b = b.decode('utf-8')
-            self.assertEquals(a, b)
-
-        self.assertEqual = converting_equals
 
     def testFormEncoded(self, generate_nonce, generate_timestamp):
         """OAuth1 assumes form encoded if content type is not specified."""
@@ -42,16 +25,16 @@ class OAuth1Test(unittest.TestCase):
         a = r.prepare()
 
         self.assertEqual(a.url, 'http://a.b/path?query=retain')
-        self.assertEqual(a.body, 'this=really&is=&+form=encoded')
-        self.assertEqual(a.headers.get('Content-Type'), 'application/x-www-form-urlencoded')
+        self.assertEqual(a.body, b'this=really&is=&+form=encoded')
+        self.assertEqual(a.headers.get('Content-Type'), b'application/x-www-form-urlencoded')
 
         # guess content-type
         r = requests.Request(method='POST', url='http://a.b/path?query=retain',
                 auth=oauth, data='this=really&is=&+form=encoded')
         b = r.prepare()
         self.assertEqual(b.url, 'http://a.b/path?query=retain')
-        self.assertEqual(b.body, 'this=really&is=&+form=encoded')
-        self.assertEqual(b.headers.get('Content-Type'), 'application/x-www-form-urlencoded')
+        self.assertEqual(b.body, b'this=really&is=&+form=encoded')
+        self.assertEqual(b.headers.get('Content-Type'), b'application/x-www-form-urlencoded')
 
         self.assertEqual(a.headers.get('Authorization'),
                 b.headers.get('Authorization'))
@@ -94,6 +77,7 @@ class OAuth1Test(unittest.TestCase):
         with open(fname, 'rb') as f:
             r = requests.post('http://httpbin.org/post', data={'hi': 'there'},
                               files={'media': (os.path.basename(f.name), f)},
+                                headers={'content-type':'application/octet-stream'},
                               auth=oauth)
             self.assertEqual(r.status_code, 200)
 
@@ -118,8 +102,39 @@ class OAuth1Test(unittest.TestCase):
         data = 'a'
         r = requests.post('http://httpbin.org/get', data=data, auth=oauth)
         self.assertEqual(r.request.headers.get('Content-Type'),
-                         'application/x-www-form-urlencoded')
+                         b'application/x-www-form-urlencoded')
         r = requests.post('http://httpbin.org/get', auth=oauth, data=data,
                           headers={'Content-type': 'application/json'})
         self.assertEqual(r.request.headers.get('Content-Type'),
-                         'application/json')
+                         b'application/json')
+
+
+    def test_register_client_class(self, generate_timestamp, generate_nonce):
+        class ClientSubclass(oauthlib.oauth1.Client):
+            pass
+
+        self.assertTrue(hasattr(requests_oauthlib.OAuth1, 'client_class'))
+
+        self.assertEqual(
+            requests_oauthlib.OAuth1.client_class,
+            oauthlib.oauth1.Client)
+
+        normal = requests_oauthlib.OAuth1('client_key')
+
+        self.assertTrue(isinstance(normal.client, oauthlib.oauth1.Client))
+        self.assertFalse(isinstance(normal.client, ClientSubclass))
+
+        requests_oauthlib.OAuth1.client_class = ClientSubclass
+
+        self.assertEqual(requests_oauthlib.OAuth1.client_class, ClientSubclass)
+
+        custom = requests_oauthlib.OAuth1('client_key')
+
+        self.assertTrue(isinstance(custom.client, oauthlib.oauth1.Client))
+        self.assertTrue(isinstance(custom.client, ClientSubclass))
+
+        overridden = requests_oauthlib.OAuth1('client_key',
+            client_class = oauthlib.oauth1.Client)
+
+        self.assertTrue(isinstance(overridden.client, oauthlib.oauth1.Client))
+        self.assertFalse(isinstance(normal.client, ClientSubclass))

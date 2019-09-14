@@ -1,10 +1,10 @@
 from __future__ import unicode_literals
 from oauthlib.oauth2 import WebApplicationClient, InsecureTransportError
+from oauthlib.oauth2 import is_secure_transport
+from requests.auth import AuthBase
 
-from .utils import is_secure_transport
 
-
-class OAuth2(object):
+class OAuth2(AuthBase):
     """Adds proof of authorization (OAuth2 token) to the request."""
 
     def __init__(self, client_id=None, client=None, token=None):
