@@ -1,4 +1,4 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: requests-oauthlib
 Upstream-Contact: Kenneth Reitz <me@kennethreitz.com>
 Source: https://github.com/requests/requests-oauthlib
@@ -19,7 +19,7 @@ License: ISC
  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
  OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-Files: /debian/*
+Files: debian/*
 Copyright: 2013, Simon Fondrie-Teitler <simonft@riseup.net>
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify

@@ -3,15 +3,12 @@ import mock
 import unittest
 import sys
 import requests
+from io import StringIO
 
 from oauthlib.oauth1 import SIGNATURE_TYPE_QUERY, SIGNATURE_TYPE_BODY
 from oauthlib.oauth1 import SIGNATURE_RSA, SIGNATURE_PLAINTEXT
 from requests_oauthlib import OAuth1Session
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
 
 try:
     import cryptography
@@ -24,19 +21,6 @@ if sys.version[0] == '3':
 else:
     unicode_type = unicode
     bytes_type = str
-
-# Monkey patch Python 2.6 unittest
-if not hasattr(unittest, 'SkipTest'):
-    unittest.SkipTest = RuntimeWarning
-    unittest.TestResult.real_add_error = unittest.TestResult.addError
-
-    def patched_addError(self, test, exc_info):
-        if exc_info[0] is RuntimeWarning:
-            print(str(exc_info[1]), end=' ', file=sys.stderr)
-            return
-        else:
-            self.real_add_error(test, exc_info)
-    unittest.TestResult.addError = patched_addError
 
 
 TEST_RSA_KEY = (
@@ -256,6 +240,42 @@ class OAuth1SessionTest(unittest.TestCase):
         auth = OAuth1Session('foo')
         del auth._client.client.verifier
         self._test_fetch_access_token_raises_error(auth)
+
+    def test_token_proxy_set(self):
+        token = {
+            'oauth_token': 'fake-key',
+            'oauth_token_secret': 'fake-secret',
+            'oauth_verifier': 'fake-verifier',
+        }
+        sess = OAuth1Session('foo')
+        self.assertIsNone(sess._client.client.resource_owner_key)
+        self.assertIsNone(sess._client.client.resource_owner_secret)
+        self.assertIsNone(sess._client.client.verifier)
+        self.assertEqual(sess.token, {})
+
+        sess.token = token
+        self.assertEqual(sess._client.client.resource_owner_key, 'fake-key')
+        self.assertEqual(sess._client.client.resource_owner_secret, 'fake-secret')
+        self.assertEqual(sess._client.client.verifier, 'fake-verifier')
+
+    def test_token_proxy_get(self):
+        token = {
+            'oauth_token': 'fake-key',
+            'oauth_token_secret': 'fake-secret',
+            'oauth_verifier': 'fake-verifier',
+        }
+        sess = OAuth1Session(
+            'foo',
+            resource_owner_key=token['oauth_token'],
+            resource_owner_secret=token['oauth_token_secret'],
+            verifier=token['oauth_verifier'],
+        )
+        self.assertEqual(sess.token, token)
+
+        sess._client.client.resource_owner_key = "different-key"
+        token['oauth_token'] = "different-key"
+
+        self.assertEqual(sess.token, token)
 
     def test_authorized_false(self):
         sess = OAuth1Session('foo')

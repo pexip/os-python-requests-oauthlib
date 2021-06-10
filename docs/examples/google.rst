@@ -1,11 +1,11 @@
 Google OAuth 2 Tutorial
 ==========================
 
-Setup a new web application client in the `Google API console`_
+Setup a new web project in the `Google Cloud Console`_
 When you have obtained a ``client_id``, ``client_secret`` and registered
 a callback URL then you can try out the command line interactive example below.
 
-.. _`Google API console`: https://code.google.com/apis/console/?pli=1
+.. _`Google Cloud Console`: https://cloud.google.com/console/project
 
 .. code-block:: pycon
 
@@ -15,8 +15,8 @@ a callback URL then you can try out the command line interactive example below.
     >>> redirect_uri = 'https://your.registered/callback'
 
     >>> # OAuth endpoints given in the Google API documentation
-    >>> authorization_base_url = "https://accounts.google.com/o/oauth2/auth"
-    >>> token_url = "https://accounts.google.com/o/oauth2/token"
+    >>> authorization_base_url = "https://accounts.google.com/o/oauth2/v2/auth"
+    >>> token_url = "https://www.googleapis.com/oauth2/v4/token"
     >>> scope = [
     ...     "https://www.googleapis.com/auth/userinfo.email",
     ...     "https://www.googleapis.com/auth/userinfo.profile"
@@ -29,7 +29,7 @@ a callback URL then you can try out the command line interactive example below.
     >>> authorization_url, state = google.authorization_url(authorization_base_url,
     ...     # offline for refresh token
     ...     # force to always make user click authorize
-    ...     access_type="offline", approval_prompt="force")
+    ...     access_type="offline", prompt="select_account")
     >>> print 'Please go here and authorize,', authorization_url
 
     >>> # Get the authorization verifier code from the callback url

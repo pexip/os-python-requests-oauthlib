@@ -1,8 +1,5 @@
 from __future__ import unicode_literals
-try:
-    from unittest2 import TestCase
-except ImportError:
-    from unittest import TestCase
+from unittest import TestCase
 
 import requests
 import requests_mock
@@ -12,12 +9,15 @@ try:
 except ImportError:
     from urllib.parse import urlparse, parse_qs
 
+from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 from requests_oauthlib import OAuth2Session
 from requests_oauthlib.compliance_fixes import facebook_compliance_fix
+from requests_oauthlib.compliance_fixes import fitbit_compliance_fix
 from requests_oauthlib.compliance_fixes import linkedin_compliance_fix
 from requests_oauthlib.compliance_fixes import mailchimp_compliance_fix
 from requests_oauthlib.compliance_fixes import weibo_compliance_fix
 from requests_oauthlib.compliance_fixes import slack_compliance_fix
+from requests_oauthlib.compliance_fixes import plentymarkets_compliance_fix
 
 
 class FacebookComplianceFixTest(TestCase):
@@ -42,6 +42,63 @@ class FacebookComplianceFixTest(TestCase):
              authorization_response='https://i.b/?code=hello',
         )
         self.assertEqual(token, {'access_token': 'urlencoded', 'token_type': 'Bearer'})
+
+
+class FitbitComplianceFixTest(TestCase):
+
+    def setUp(self):
+        self.mocker = requests_mock.Mocker()
+        self.mocker.post(
+            "https://api.fitbit.com/oauth2/token",
+            json={"errors": [{"errorType": "invalid_grant"}]},
+        )
+        self.mocker.start()
+        self.addCleanup(self.mocker.stop)
+
+        fitbit = OAuth2Session('foo', redirect_uri='https://i.b')
+        self.session = fitbit_compliance_fix(fitbit)
+
+    def test_fetch_access_token(self):
+        self.assertRaises(
+            InvalidGrantError,
+            self.session.fetch_token,
+            'https://api.fitbit.com/oauth2/token',
+            client_secret='bar',
+            authorization_response='https://i.b/?code=hello',
+        )
+
+        self.mocker.post(
+            "https://api.fitbit.com/oauth2/token",
+            json={"access_token": "fitbit"},
+        )
+
+        token = self.session.fetch_token(
+            'https://api.fitbit.com/oauth2/token',
+            client_secret='good'
+        )
+
+        self.assertEqual(token, {'access_token': 'fitbit'})
+
+    def test_refresh_token(self):
+        self.assertRaises(
+            InvalidGrantError,
+            self.session.refresh_token,
+            'https://api.fitbit.com/oauth2/token',
+            auth=requests.auth.HTTPBasicAuth('foo', 'bar')
+        )
+
+        self.mocker.post(
+            "https://api.fitbit.com/oauth2/token",
+            json={"access_token": "access", "refresh_token": "refresh"},
+        )
+
+        token = self.session.refresh_token(
+            'https://api.fitbit.com/oauth2/token',
+            auth=requests.auth.HTTPBasicAuth('foo', 'bar')
+        )
+
+        self.assertEqual(token['access_token'], 'access')
+        self.assertEqual(token['refresh_token'], 'refresh')
 
 
 class LinkedInComplianceFixTest(TestCase):
@@ -216,3 +273,40 @@ class SlackComplianceFixTest(TestCase):
         query = parse_qs(urlparse(url).query)
         self.assertEqual(query["token"], ["different-token"])
         self.assertIsNone(response.request.body)
+
+
+class PlentymarketsComplianceFixTest(TestCase):
+
+    def setUp(self):
+        mocker = requests_mock.Mocker()
+        mocker.post(
+            "https://shop.plentymarkets-cloud02.com",
+            json=
+            {
+            "accessToken": "ecUN1r8KhJewMCdLAmpHOdZ4O0ofXKB9zf6CXK61",
+            "tokenType": "Bearer",
+            "expiresIn": 86400,
+            "refreshToken": "iG2kBGIjcXaRE4xmTVUnv7xwxX7XMcWCHqJmFaSX"
+            },
+            headers={"Content-Type": "application/json"}
+        )
+        mocker.start()
+        self.addCleanup(mocker.stop)
+
+        plentymarkets = OAuth2Session('foo', redirect_uri='https://i.b')
+        self.session = plentymarkets_compliance_fix(plentymarkets)
+
+    def test_fetch_access_token(self):
+        token = self.session.fetch_token(
+            "https://shop.plentymarkets-cloud02.com",
+             authorization_response='https://i.b/?code=hello',
+        )
+
+        approx_expires_at = time.time() + 86400
+        actual_expires_at = token.pop('expires_at')
+        self.assertAlmostEqual(actual_expires_at, approx_expires_at, places=2)
+
+        self.assertEqual(token, {u'access_token': u'ecUN1r8KhJewMCdLAmpHOdZ4O0ofXKB9zf6CXK61',
+                                 u'expires_in': 86400,
+                                 u'token_type': u'Bearer',
+                                 u'refresh_token': u'iG2kBGIjcXaRE4xmTVUnv7xwxX7XMcWCHqJmFaSX'})

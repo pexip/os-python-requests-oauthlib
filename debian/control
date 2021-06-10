@@ -4,40 +4,24 @@ XSBC-Pexip-Original-Maintainer: Simon Fondrie-Teitler <simonft@riseup.net>
 Section: python
 Priority: optional
 Build-Depends: debhelper (>= 9),
-               python-all (>= 2.6.6-3),
-               python-setuptools (>= 0.6b3),
+               dh-python,
                python3-all,
                python3-setuptools,
-	       python-requests,
-	       python-oauthlib,
-	       python-sphinx,
+	       python3-requests,
+	       python3-oauthlib,
+	       python3-sphinx,
 Homepage: https://github.com/requests/requests-oauthlib
-Standards-Version: 3.9.5
-Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/python-requests-oauthlib.git
-Vcs-Git: git://anonscm.debian.org/collab-maint/python-requests-oauthlib.git -b debian/unstable
+Standards-Version: 4.1.4
+Vcs-Browser: https://salsa.debian.org/simonft-guest/python-requests-oauthlib
+Vcs-Git: https://salsa.debian.org/simonft-guest/python-requests-oauthlib.git
 XS-Pexip-Upstream: http://ftp.debian.org/debian/ bullseye
-
-Package: python-requests-oauthlib
-Architecture: all
-Depends: ${misc:Depends}, 
-	 ${python:Depends}, 
-	 python-requests, 
-	 python-oauthlib (>= 0.4.2)
-Description: module providing OAuthlib auth support for requests (Python 2)
- requests-oauthlib allows you to interact with OAuth 1 And OAuth 2 in
- greatly simplified ways through the requests library for Python. It
- will hide the quirks and hacks in OAuth 1, and will interface with
- all four of the grant types defined by the OAuth2 RFC.
- .
- This package provides the requests-oauthlib Python module for Python
- 2.x.
 
 Package: python3-requests-oauthlib
 Architecture: all
 Depends: ${misc:Depends}, 
 	 ${python3:Depends}, 
 	 python3-requests, 
-	 python3-oauthlib (>= 0.4.2)
+	 python3-oauthlib
 Description: module providing OAuthlib auth support for requests (Python 3)
  requests-oauthlib allows you to interact with OAuth 1 And OAuth 2 in
  greatly simplified ways through the requests library for Python. It

@@ -1,3 +1,50 @@
+python-requests-oauthlib (1.0.0-1.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Removed Python 2 support (Closes: #938140).
+  * d/source/options: Add extend-diff-ignore = "^[^/]*[.]egg-info/".
+  * Add patch-out-intersphinx.patch.
+
+ -- Thomas Goirand <zigo@debian.org>  Sat, 14 Sep 2019 21:00:14 +0200
+
+python-requests-oauthlib (1.0.0-1) unstable; urgency=medium
+
+  * New upstream version 1.0.0
+  * Add dependency on dh-python
+  * Point VCS urls at Salsa
+  * Bump standards version (no changes)
+  * Update watch file to use pypi.debian.net
+  * Build depend on python3-sphinx instead of python-sphinx
+
+ -- Simon Fondrie-Teitler <simonft@riseup.net>  Sun, 24 Jun 2018 16:48:32 -0400
+
+python-requests-oauthlib (0.8.0-0.1) unstable; urgency=medium
+
+  * Non-maintainer upload
+  * New upstream version 0.8.0
+  * debian/control
+   - Updates VCS links
+   - Removes unnecessary versioned dependencies
+   - Updates standards version to 4.1.0
+  * debian/copyright
+   - Updates format link to use https
+
+ -- Ana Custura <ana@netstat.org.uk>  Sat, 09 Sep 2017 09:01:27 +0100
+
+python-requests-oauthlib (0.7.0-0.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Imported new upstream version 0.7.0.
+
+ -- Iain R. Learmonth <irl@debian.org>  Sat, 03 Dec 2016 15:28:38 +0000
+
+python-requests-oauthlib (0.6.2-0.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Imported new upstream version 0.6.2.
+
+ -- Iain R. Learmonth <irl@debian.org>  Sat, 17 Sep 2016 19:48:04 +0100
+
 python-requests-oauthlib (0.6.1-0pexip2) pexip; urgency=low
 
   * No-change rebuild
