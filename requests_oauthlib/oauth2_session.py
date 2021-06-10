@@ -57,7 +57,7 @@ class OAuth2Session(requests.Session):
         :auto_refresh_kwargs: Extra arguments to pass to the refresh token
                               endpoint.
         :token_updater: Method with one argument, token, to be used to update
-                        your token databse on automatic token refresh. If not
+                        your token database on automatic token refresh. If not
                         set a TokenUpdated warning will be raised when a token
                         has been refreshed. This warning will carry the token
                         in its token argument.
@@ -77,9 +77,9 @@ class OAuth2Session(requests.Session):
         # Allow customizations for non compliant providers through various
         # hooks to adjust requests and responses.
         self.compliance_hook = {
-            'access_token_response': set([]),
-            'refresh_token_response': set([]),
-            'protected_request': set([]),
+            'access_token_response': set(),
+            'refresh_token_response': set(),
+            'protected_request': set(),
         }
 
     def new_state(self):
@@ -154,7 +154,7 @@ class OAuth2Session(requests.Session):
 
     def fetch_token(self, token_url, code=None, authorization_response=None,
             body='', auth=None, username=None, password=None, method='POST',
-            timeout=None, headers=None, verify=True, **kwargs):
+            timeout=None, headers=None, verify=True, proxies=None, **kwargs):
         """Generic method for fetching an access token from the token endpoint.
 
         If you are using the MobileApplicationClient you will want to use
@@ -190,17 +190,25 @@ class OAuth2Session(requests.Session):
             code = self._client.code
             if not code:
                 raise ValueError('Please supply either code or '
-                                 'authorization_code parameters.')
+                                 'authorization_response parameters.')
 
 
         body = self._client.prepare_request_body(code=code, body=body,
                 redirect_uri=self.redirect_uri, username=username,
                 password=password, **kwargs)
 
-        if (not auth) and username:
-            if password is None:
-                raise ValueError('Username was supplied, but not password.')
-            auth = requests.auth.HTTPBasicAuth(username, password)
+        client_id = kwargs.get('client_id', '')
+        if auth is None:
+            if client_id:
+                log.debug('Encoding client_id "%s" with client_secret as Basic auth credentials.', client_id)
+                client_secret = kwargs.get('client_secret', '')
+                client_secret = client_secret if client_secret is not None else ''
+                auth = requests.auth.HTTPBasicAuth(client_id, client_secret)
+            elif username:
+                if password is None:
+                    raise ValueError('Username was supplied, but not password.')
+                log.debug('Encoding username, password as Basic auth credentials.')
+                auth = requests.auth.HTTPBasicAuth(username, password)
 
         headers = headers or {
             'Accept': 'application/json',
@@ -210,13 +218,13 @@ class OAuth2Session(requests.Session):
         if method.upper() == 'POST':
             r = self.post(token_url, data=dict(urldecode(body)),
                 timeout=timeout, headers=headers, auth=auth,
-                verify=verify)
+                verify=verify, proxies=proxies)
             log.debug('Prepared fetch token request body %s', body)
         elif method.upper() == 'GET':
             # if method is not 'POST', switch body to querystring and GET
             r = self.get(token_url, params=dict(urldecode(body)),
                 timeout=timeout, headers=headers, auth=auth,
-                verify=verify)
+                verify=verify, proxies=proxies)
             log.debug('Prepared fetch token request querystring %s', body)
         else:
             raise ValueError('The method kwarg must be POST or GET.')
@@ -250,7 +258,7 @@ class OAuth2Session(requests.Session):
         return self.token
 
     def refresh_token(self, token_url, refresh_token=None, body='', auth=None,
-                      timeout=None, headers=None, verify=True, **kwargs):
+                      timeout=None, headers=None, verify=True, proxies=None, **kwargs):
         """Fetch a new access token using a refresh token.
 
         :param token_url: The token endpoint, must be HTTPS.
@@ -287,7 +295,7 @@ class OAuth2Session(requests.Session):
             }
 
         r = self.post(token_url, data=dict(urldecode(body)), auth=auth,
-            timeout=timeout, headers=headers, verify=verify, withhold_token=True)
+            timeout=timeout, headers=headers, verify=verify, withhold_token=True, proxies=proxies)
         log.debug('Request to refresh token completed with status %s.',
                   r.status_code)
         log.debug('Response headers were %s and content %s.',
@@ -304,7 +312,8 @@ class OAuth2Session(requests.Session):
             self.token['refresh_token'] = refresh_token
         return self.token
 
-    def request(self, method, url, data=None, headers=None, withhold_token=False, **kwargs):
+    def request(self, method, url, data=None, headers=None, withhold_token=False,
+                client_id=None, client_secret=None, **kwargs):
         """Intercept all requests and add the OAuth 2 token if present."""
         if not is_secure_transport(url):
             raise InsecureTransportError()
@@ -324,7 +333,15 @@ class OAuth2Session(requests.Session):
                 if self.auto_refresh_url:
                     log.debug('Auto refresh is set, attempting to refresh at %s.',
                               self.auto_refresh_url)
-                    token = self.refresh_token(self.auto_refresh_url, **kwargs)
+
+                    # We mustn't pass auth twice.
+                    auth = kwargs.pop('auth', None)
+                    if client_id and client_secret and (auth is None):
+                        log.debug('Encoding client_id "%s" with client_secret as Basic auth credentials.', client_id)
+                        auth = requests.auth.HTTPBasicAuth(client_id, client_secret)
+                    token = self.refresh_token(
+                        self.auto_refresh_url, auth=auth, **kwargs
+                    )
                     if self.token_updater:
                         log.debug('Updating token to %s using %s.',
                                   token, self.token_updater)

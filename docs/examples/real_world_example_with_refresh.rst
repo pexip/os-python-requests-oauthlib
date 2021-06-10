@@ -58,7 +58,7 @@ trivial to transfer to any other web framework and provider.
         authorization_url, state = google.authorization_url(authorization_base_url,
             # offline for refresh token
             # force to always make user click authorize
-            access_type="offline", approval_prompt="force")
+            access_type="offline", prompt="select_account")
 
         # State is used to prevent CSRF, keep this for later.
         session['oauth_state'] = state
@@ -175,7 +175,7 @@ trivial to transfer to any other web framework and provider.
     if __name__ == "__main__":
         # This allows us to use a plain HTTP callback
         import os
-        os.environ['DEBUG'] = "1"
+        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = "1"
 
         app.secret_key = os.urandom(24)
         app.run(debug=True)

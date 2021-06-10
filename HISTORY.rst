@@ -1,6 +1,48 @@
 History
 -------
 
+UNRELEASED
+++++++++++
+
+nothing yet
+
+v1.0.0 (4 June 2018)
+++++++++++++++++++++
+
+- **Removed support for Python 2.6 and Python 3.3.**
+  This project now supports Python 2.7, and Python 3.4 and above.
+- Added several examples to the documentation.
+- Added plentymarkets compliance fix.
+- Added a ``token`` property to OAuth1Session, to match the corresponding
+  ``token`` property on OAuth2Session.
+
+v0.8.0 (14 February 2017)
++++++++++++++++++++++++++
+
+- Added Fitbit compliance fix.
+- Fixed an issue where newlines in the response body for the access token
+  request would cause errors when trying to extract the token.
+- Fixed an issue introduced in v0.7.0 where users passing ``auth`` to several
+  methods would encounter conflicts with the ``client_id`` and
+  ``client_secret``-derived auth. The user-supplied ``auth`` argument is now
+  used in preference to those options.
+
+v0.7.0 (22 September 2016)
+++++++++++++++++++++++++++
+
+- Allowed ``OAuth2Session.request`` to take the ``client_id`` and
+  ``client_secret`` parameters for the purposes of automatic token refresh,
+  which may need them.
+
+v0.6.2 (12 July 2016)
++++++++++++++++++++++
+
+- Use ``client_id`` and ``client_secret`` for the Authorization header if
+  provided.
+- Allow explicit bypass of the Authorization header by setting ``auth=False``.
+- Pass through the ``proxies`` kwarg when refreshing tokens.
+- Miscellaneous cleanups.
+
 v0.6.1 (19 February 2016)
 +++++++++++++++++++++++++
 
@@ -32,8 +74,8 @@ v0.5.0 (4 May 2015)
 - Avoid ``AttributeError`` when initializing the ``OAuth2Session`` class
   without complete client information.
 
-v0.4.2
-++++++
+v0.4.2 (16 October 2014)
+++++++++++++++++++++++++
 - New ``authorized`` property on OAuth1Session and OAuth2Session, which allows
   you to easily determine if the session is already authorized with OAuth tokens
   or not.
