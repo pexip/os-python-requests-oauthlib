@@ -15,7 +15,7 @@ Homepage: https://github.com/requests/requests-oauthlib
 Standards-Version: 3.9.5
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/python-requests-oauthlib.git
 Vcs-Git: git://anonscm.debian.org/collab-maint/python-requests-oauthlib.git -b debian/unstable
-XS-Pexip-Upstream: http://ftp.debian.org/debian/ stretch
+XS-Pexip-Upstream: http://ftp.debian.org/debian/ bullseye
 
 Package: python-requests-oauthlib
 Architecture: all
