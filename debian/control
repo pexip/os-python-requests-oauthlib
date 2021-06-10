@@ -60,5 +60,3 @@ Description: module providing OAuthlib auth support for requests (Common Documen
  .
  This package provides the common documentation for the
  requests-oauthlib Python module.
-
- 
